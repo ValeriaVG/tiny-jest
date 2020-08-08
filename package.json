@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Minimalistic zero dependency Jest-like test library to run tests in browser, nodejs or deno.",
   "main": "dist/index.js",
-  "module": "dist/bundle.js",
+  "module": "dist/index.js",
   "repository": "https://github.com/ValeriaVG/tinytest.git",
   "author": "ValeriaVG",
   "license": "MIT",

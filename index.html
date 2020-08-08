@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tiny Jest</title>
+    <script src="dist/bundle.js"></script>
+  </head>
+  <body>
+    <div id="result"></div>
+    <script>
+      const { Test, expect, prettify } = tinyJest;
+      const { it, run, title } = new Test("browser-tiny-jest");
+
+      it("2+2=4", () => {
+        expect(2 + 2).toBe(4);
+      });
+
+      it("2+1=4", () => {
+        expect(2 + 1).toBe(4);
+      });
+
+      it("2+1!=4", () => {
+        expect(2 + 1).not.toBe(4);
+      });
+
+      it("1 is truthy", () => {
+        expect(1).toBeTruthy();
+      });
+
+      it("0 is truthy", () => {
+        expect(0).toBeTruthy();
+      });
+
+      it("0 is not truthy", () => {
+        expect(0).not.toBeTruthy();
+      });
+
+      it("compares objects", () => {
+        expect({ name: "John Doe" }).toMatchObject({ name: "John Doe" });
+      });
+
+      it("compares objects", () => {
+        expect({ name: "John Doe" }).toMatchObject({ name: "Jane Doe" });
+      });
+
+      it("compares partial objects", () => {
+        expect({
+          fullName: {
+            givenName: "John",
+            familyName: "Doe",
+          },
+        }).toMatchObject({
+          fullName: {
+            givenName: "John",
+          },
+        });
+      });
+
+      const start = performance.now();
+      const resultDiv = document.getElementById("result");
+
+      run()
+        .then((results) => {
+          const end = performance.now();
+          console.log(title, end - start, "ms");
+          const p = document.createElement("p");
+          p.innerText = `${title} ${end - start}, "ms"`;
+          resultDiv.appendChild(p);
+          results
+            .map(({ title, passed, skipped, error }) => {
+              if (passed) return { text: `✓ ${title}`, style: "color:green;" };
+              if (skipped)
+                return { text: `□ ${title}`, style: "color:orange;" };
+              if (!passed)
+                return { text: `𐄂 ${title}`, style: "color:red;", error };
+            })
+            .forEach(({ text, style, error }) => {
+              const p = document.createElement("p");
+              p.innerText = text;
+              p.style = style;
+              if (error) {
+                const br = document.createElement("br");
+                p.appendChild(br);
+                const em = document.createElement("em");
+                em.innerText = error.message;
+                p.appendChild(em);
+              }
+              resultDiv.appendChild(p);
+            });
+          return results;
+        })
+        .then(prettify);
+    </script>
+  </body>
+</html>

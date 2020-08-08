@@ -2,6 +2,11 @@
   "name": "tiny-jest",
   "version": "1.0.2",
   "description": "Minimalistic zero dependency Jest-like test library to run tests in browser, nodejs or deno.",
+  "keywords": [
+    "jest",
+    "test",
+    "browser"
+  ],
   "main": "dist/index.js",
   "module": "dist/index.js",
   "repository": "https://github.com/ValeriaVG/tiny-jest.git",

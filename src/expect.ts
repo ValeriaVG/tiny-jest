@@ -78,13 +78,12 @@ export default function expect(
           actual,
           `Expected ${JSON.stringify(actual)} not ${matcher.replace(
             /[A-Z]/g,
-            (letter) =>
-              `_${letter.toLowerCase()}${
-                typeof expected !== "undefined"
-                  ? " " + JSON.stringify(expected)
-                  : ""
-              }`
-          )}`
+            (letter) => ` ${letter.toLowerCase()}`
+          )}${
+            typeof expected !== "undefined"
+              ? " " + JSON.stringify(expected)
+              : ""
+          }`
         );
     };
   });

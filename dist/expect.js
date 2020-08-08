@@ -55,9 +55,9 @@ function expect(actual) {
         expectation.not[matcher] = (expected) => {
             const diff = matchers[matcher](actual, expected);
             if (diff === false)
-                throw new ExpectationError(matcher, expected, actual, `Expected ${JSON.stringify(actual)} not ${matcher.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}${typeof expected !== "undefined"
+                throw new ExpectationError(matcher, expected, actual, `Expected ${JSON.stringify(actual)} not ${matcher.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`)}${typeof expected !== "undefined"
                     ? " " + JSON.stringify(expected)
-                    : ""}`)}`);
+                    : ""}`);
         };
     });
     return expectation;

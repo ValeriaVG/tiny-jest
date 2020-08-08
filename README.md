@@ -53,3 +53,53 @@ it("2+2=4", () => {
 
 run().then(prettify);
 ```
+
+## Usage
+
+For benchmarks and usage examples see `benchmark` folder.
+
+```js
+const { it, run, title } = new Test("name-of-your-test");
+
+it("toBe", () => {
+  expect(2 + 2).toBe(4);
+  expect(2 + 2).not.toBe(5);
+});
+
+it("toEqual", () => {
+  expect(2 + 2).toEqual("4");
+  expect(2 + 2).not.toEqual("5");
+});
+
+it("toBeTruthy", () => {
+  expect(0).toBeFalsy();
+  expect(1).not.toBeFalsy();
+});
+
+it("toBeFalsy", () => {
+  expect(1).toBeTruthy();
+});
+
+it("toMatchObject", () => {
+  expect({
+    fullName: {
+      givenName: "John",
+      familyName: "Doe",
+    },
+  }).toMatchObject({
+    fullName: {
+      givenName: "John",
+    },
+  });
+  expect({
+    givenName: "John",
+    familyName: "Doe",
+  }).not.toMatchObject({
+    fullName: {
+      givenName: "John",
+    },
+  });
+});
+
+run().then(prettify);
+```

@@ -43,7 +43,7 @@ import {
   Test,
   expect,
   prettify,
-} from "https://raw.githubusercontent.com/ValeriaVG/tiny-jest/1.0/mod.ts ";
+} from "https://raw.githubusercontent.com/ValeriaVG/tiny-jest/1.0/mod.ts";
 
 const { it, run, title } = new Test("basic");
 

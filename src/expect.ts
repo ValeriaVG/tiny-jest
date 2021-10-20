@@ -7,18 +7,19 @@ export class ExpectationError extends Error {
 }
 
 export type Expectation<T> = (expected: T) => void;
-export type JustExpectation = () => void;
+
 export type Expectations = {
   toBe: Expectation<any>;
   toEqual: Expectation<any>;
-  toBeTruthy: JustExpectation;
-  toBeFalsy: JustExpectation;
+  toBeTruthy: Expectation<void>;
+  toBeFalsy: Expectation<void>;
   toMatchObject: Expectation<Object>;
+  toThrow: Expectation<RegExp | void>;
 };
 
 export type Matcher = (actual: any, expected: any) => false | string;
 
-const matchers: { [key: string]: Matcher } = {
+const matchers: Record<keyof Expectations, Matcher> = {
   toBe: (actual: any, expected: any) => {
     return expected === actual
       ? false
@@ -56,6 +57,20 @@ const matchers: { [key: string]: Matcher } = {
     }
     return false;
   },
+  toThrow: (fn: Function, expression?: RegExp): string | false => {
+    try {
+      fn();
+      return `Expected ${fn.toString()} to throw error ${
+        expression && ` matching ${expression.toString()}`
+      }`;
+    } catch (err) {
+      if (!expression || expression.test(err.toString())) return false;
+      return `Expected ${fn.toString()} to throw error ${
+        expression &&
+        ` matching ${expression.toString()}, but got ${err.toString()} instead`
+      }`;
+    }
+  },
 };
 
 export default function expect(
@@ -64,7 +79,7 @@ export default function expect(
   const expectation: any = {
     not: {},
   };
-  Object.keys(matchers).forEach((matcher) => {
+  Object.keys(matchers).forEach((matcher: keyof Expectations) => {
     expectation[matcher] = (expected: any) => {
       const diff = matchers[matcher](actual, expected);
       if (diff) throw new ExpectationError(matcher, expected, actual, diff);

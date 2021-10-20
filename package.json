@@ -17,7 +17,7 @@
     "bundle": "browserify -s tiny-jest -p tinyify dist/index.js -o dist/bundle.js",
     "build": "yarn compile && yarn bundle",
     "bench:node": "node benchmark/node.test.js",
-    "bench:deno": "deno run --allow-read benchmark/deno.test.ts"
+    "bench:deno": "deno run -r --allow-read benchmark/deno.test.ts"
   },
   "devDependencies": {
     "@types/node": "^14.0.27",

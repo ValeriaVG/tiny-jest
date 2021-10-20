@@ -23,6 +23,18 @@ it("toBeTruthy", () => {
   expect({}).toBeTruthy();
   expect("").not.toBeTruthy();
 });
+it("toThrow", () => {
+  expect(() => {
+    throw "Error";
+  }).toThrow();
+  expect(() => {}).not.toThrow();
+  expect(() => {
+    throw "Not Found";
+  }).toThrow(/not found/gi);
+  expect(() => {
+    throw "Not Found";
+  }).not.toThrow(/server error/gi);
+});
 
 it("expect.not", async () => {
   try {

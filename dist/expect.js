@@ -41,6 +41,18 @@ const matchers = {
         }
         return false;
     },
+    toThrow: (fn, expression) => {
+        try {
+            fn();
+            return `Expected ${fn.toString()} to throw error ${expression && ` matching ${expression.toString()}`}`;
+        }
+        catch (err) {
+            if (!expression || expression.test(err.toString()))
+                return false;
+            return `Expected ${fn.toString()} to throw error ${expression &&
+                ` matching ${expression.toString()}, but got ${err.toString()} instead`}`;
+        }
+    },
 };
 function expect(actual) {
     const expectation = {

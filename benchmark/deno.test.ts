@@ -41,6 +41,18 @@ it("toMatchObject", () => {
     },
   });
 });
+it("toThrow", () => {
+  expect(() => {
+    throw "Error";
+  }).toThrow();
+  expect(() => {}).not.toThrow();
+  expect(() => {
+    throw "Not Found";
+  }).toThrow(/not found/gi);
+  expect(() => {
+    throw "Not Found";
+  }).not.toThrow(/server error/gi);
+});
 
 const start = performance.now();
 run()

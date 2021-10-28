@@ -26,9 +26,13 @@ const matchers = {
         return actual ? `Expected ${JSON.stringify(actual)} to be falsy` : false;
     },
     toMatchObject: (actual, expected) => {
+        const error = `${JSON.stringify(actual)} does not match ${JSON.stringify(expected)}`;
+        if (typeof actual !== typeof expected ||
+            Array.isArray(actual) !== Array.isArray(expected))
+            return error;
         for (let key in expected) {
             if (typeof actual[key] !== typeof expected[key])
-                return `Types mismatch for ${key}: ${typeof actual[key]} != ${typeof expected[key]}`;
+                return `${error}:\nTypes mismatch for ${key}: ${typeof actual[key]} != ${typeof expected[key]}`;
             if (typeof expected[key] !== "object") {
                 const res = matchers.toBe(actual[key], expected[key]);
                 if (res)

@@ -50,4 +50,31 @@ it("expect.not", async () => {
     expect(error.message).toBe("Expected 2 not to be truthy");
   }
 });
+
+it("toMatchObject", () => {
+  const more = { a: 1, b: 2, c: 3 };
+  const less = { a: 1, b: 2 };
+  expect(more).toMatchObject(more);
+  expect(less).toMatchObject(less);
+
+  expect(more).toMatchObject(less);
+  expect(less).not.toMatchObject(more);
+});
+
+it("toMatchObject/arrays", () => {
+  expect([]).toMatchObject([]);
+  expect([]).not.toMatchObject({});
+  expect([1, 2, 3]).toMatchObject([1, 2]);
+  expect([2, 3]).not.toMatchObject([1, 2, 3]);
+  expect([{ id: 1, name: "1" }, { id: 2, name: "2" }, { id: 3 }]).toMatchObject(
+    [{ id: 1 }, { id: 2 }, { id: 3 }]
+  );
+  expect([{ id: 1 }, { id: 2 }, { id: 3 }]).not.toMatchObject([
+    { id: 1, name: "1" },
+    { id: 2, name: "2" },
+    { id: 3 },
+  ]);
+  expect({ a: [1, 2, 3] }).toMatchObject({ a: [1, 2, 3] });
+  expect({ a: [1, 2] }).not.toMatchObject({ a: [1, 2, 3] });
+});
 module.exports = test;

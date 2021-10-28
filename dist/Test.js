@@ -57,7 +57,7 @@ class Test {
         this.after = (fn) => {
             this._after.push(fn);
         };
-        this.title = title;
+        this.title = title !== null && title !== void 0 ? title : "";
     }
 }
 exports.default = Test;

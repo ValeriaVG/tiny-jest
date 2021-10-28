@@ -7,14 +7,14 @@ export type TestResult = {
 
 export type FixtureFn = () => Promise<void> | void;
 export default class Test {
-  title?: string;
+  title: string;
   suite: { title: string; fn?: Function }[] = [];
   // Stores last results
   results: TestResult[] = [];
   private _before: FixtureFn[] = [];
   private _after: FixtureFn[] = [];
   constructor(title?: string) {
-    this.title = title;
+    this.title = title ?? "";
   }
   it = (title: string, fn?: Function) => {
     this.suite.push({ title, fn });

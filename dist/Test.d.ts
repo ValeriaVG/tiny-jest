@@ -6,7 +6,7 @@ export declare type TestResult = {
 };
 export declare type FixtureFn = () => Promise<void> | void;
 export default class Test {
-    title?: string;
+    title: string;
     suite: {
         title: string;
         fn?: Function;

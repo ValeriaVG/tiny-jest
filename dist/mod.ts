@@ -1,3 +1,76 @@
+export type TestResult = {
+  title: string;
+  skipped?: boolean;
+  passed?: boolean;
+  error?: Error;
+};
+
+export type FixtureFn = () => Promise<void> | void;
+export class Test {
+  title: string;
+  suite: { title: string; fn?: Function }[] = [];
+  // Stores last results
+  results: TestResult[] = [];
+  private _before: FixtureFn[] = [];
+  private _after: FixtureFn[] = [];
+  constructor(title?: string) {
+    this.title = title ?? "";
+  }
+  it = (title: string, fn?: Function) => {
+    this.suite.push({ title, fn });
+  };
+  xit = (title: string, _fn?: Function) => {
+    this.suite.push({ title });
+  };
+  run = async () => {
+    this.results = [];
+    try {
+      await Promise.all(this._before.map((fn) => fn()));
+    } catch (error) {
+      return [{ title: this.title, error, passed: false }];
+    }
+    for (let test of this.suite) {
+      if (!test.fn) {
+        this.results.push({ title: test.title, skipped: true });
+        continue;
+      }
+      try {
+        await test.fn();
+        this.results.push({ title: test.title, passed: true });
+      } catch (error) {
+        this.results.push({ title: test.title, error, passed: false });
+      }
+    }
+    try {
+      await Promise.all(this._after.map((fn) => fn()));
+    } catch (error) {
+      console.error(error);
+    }
+    return this.results;
+  };
+  before = (fn: FixtureFn) => {
+    this._before.push(fn);
+  };
+  after = (fn: FixtureFn) => {
+    this._after.push(fn);
+  };
+}
+
+export function prettify(testResults: TestResult[]) {
+  testResults.forEach(({ title, passed, skipped, error }) => {
+    if (passed) return console.info("\x1b[32m", `✓ ${title}`);
+    if (skipped) return console.info("\x1b[33m", `□ ${title}`);
+    if (!passed)
+      return console.error(
+        "\x1b[31m",
+        `𐄂 ${title}`,
+        "\n  Failed:",
+        error!.message
+      );
+  });
+  console.log("\x1b[0m");
+}
+
 export class ExpectationError extends Error {
   extensions: { matcher: string; expected: any; actual: any };
   constructor(matcher: string, expected: any, actual: any, diff: string) {
@@ -39,9 +112,17 @@ const matchers: Record<keyof Expectations, Matcher> = {
     return actual ? `Expected ${JSON.stringify(actual)} to be falsy` : false;
   },
   toMatchObject: (actual: any, expected: any): string | false => {
+    const error = `${JSON.stringify(actual)} does not match ${JSON.stringify(
+      expected
+    )}`;
+    if (
+      typeof actual !== typeof expected ||
+      Array.isArray(actual) !== Array.isArray(expected)
+    )
+      return error;
     for (let key in expected) {
       if (typeof actual[key] !== typeof expected[key])
-        return `Types mismatch for ${key}: ${typeof actual[
+        return `${error}:\nTypes mismatch for ${key}: ${typeof actual[
           key
         ]} != ${typeof expected[key]}`;
       if (typeof expected[key] !== "object") {
@@ -101,76 +182,4 @@ export function expect(actual: any): Expectations & { not: Expectations } {
     };
   });
   return expectation;
-}
-
-export function prettify(testResults: TestResult[]) {
-  testResults.forEach(({ title, passed, skipped, error }) => {
-    if (passed) return console.info("\x1b[32m", `✓ ${title}`);
-    if (skipped) return console.info("\x1b[33m", `□ ${title}`);
-    if (!passed)
-      return console.error(
-        "\x1b[31m",
-        `𐄂 ${title}`,
-        "\n  Failed:",
-        error!.message
-      );
-  });
-  console.log("\x1b[0m");
-}
-
-export type TestResult = {
-  title: string;
-  skipped?: boolean;
-  passed?: boolean;
-  error?: Error;
-};
-export type FixtureFn = () => Promise<void> | void;
-export class Test {
-  title: string;
-  suite: { title: string; fn?: Function }[] = [];
-  // Stores last results
-  results: TestResult[] = [];
-  private _before: FixtureFn[] = [];
-  private _after: FixtureFn[] = [];
-  constructor(title?: string) {
-    this.title = title ?? "";
-  }
-  it = (title: string, fn?: Function) => {
-    this.suite.push({ title, fn });
-  };
-  xit = (title: string, _fn?: Function) => {
-    this.suite.push({ title });
-  };
-  run = async () => {
-    this.results = [];
-    try {
-      await Promise.all(this._before.map((fn) => fn()));
-    } catch (error) {
-      return [{ title: this.title, error, passed: false }];
-    }
-    for (let test of this.suite) {
-      if (!test.fn) {
-        this.results.push({ title: test.title, skipped: true });
-        continue;
-      }
-      try {
-        await test.fn();
-        this.results.push({ title: test.title, passed: true });
-      } catch (error) {
-        this.results.push({ title: test.title, error, passed: false });
-      }
-    }
-    try {
-      await Promise.all(this._after.map((fn) => fn()));
-    } catch (error) {
-      console.error(error);
-    }
-    return this.results;
-  };
-  before = (fn: FixtureFn) => {
-    this._before.push(fn);
-  };
-  after = (fn: FixtureFn) => {
-    this._after.push(fn);
-  };
 }

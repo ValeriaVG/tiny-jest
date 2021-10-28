@@ -17,11 +17,7 @@ export default class Test {
     constructor(title?: string);
     it: (title: string, fn?: Function) => void;
     xit: (title: string, _fn?: Function) => void;
-    run: () => Promise<TestResult[] | {
-        title: string;
-        error: any;
-        passed: boolean;
-    }[]>;
+    run: () => Promise<TestResult[]>;
     before: (fn: FixtureFn) => void;
     after: (fn: FixtureFn) => void;
 }

@@ -22,7 +22,7 @@ export class Test {
   xit = (title: string, _fn?: Function) => {
     this.suite.push({ title });
   };
-  run = async () => {
+  run = async (): Promise<TestResult[]> => {
     this.results = [];
     try {
       await Promise.all(this._before.map((fn) => fn()));

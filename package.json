@@ -1,6 +1,6 @@
 {
   "name": "tiny-jest",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Minimalistic zero dependency Jest-like test library to run tests in browser, nodejs or deno.",
   "keywords": [
     "jest",

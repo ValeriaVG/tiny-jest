@@ -1,8 +1,12 @@
 const { performance } = require("perf_hooks");
 const { Test, expect, prettify } = require("../dist/index");
 
-const { it, run, title } = new Test("node-tiny-jest");
-
+const { it, run, title, after, before } = new Test("node-tiny-jest");
+after(() => console.log("After test"));
+before(() => console.log("Before test"));
+it("works", () => {
+  console.log("During test");
+});
 it("toBe", () => {
   expect(2 + 2).toBe(4);
   expect(2 + 2).not.toBe(5);

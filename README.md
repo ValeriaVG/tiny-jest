@@ -59,7 +59,14 @@ run().then(prettify);
 For benchmarks and usage examples see `benchmark` folder.
 
 ```js
-const { it, run, title } = new Test("name-of-your-test");
+const { it, run, title, before, after } = new Test("name-of-your-test");
+
+before(async () => {
+  // some setup
+});
+before(async () => {
+  // some cleanup
+});
 
 it("toBe", () => {
   expect(2 + 2).toBe(4);

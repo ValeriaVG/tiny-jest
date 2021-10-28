@@ -3,6 +3,12 @@ const test = new Test("Test");
 
 test.it("properly runs tests", async () => {
   const tmp = new Test("tmp-test");
+  tmp.before(() => {
+    console.log("Before test");
+  });
+  tmp.after(() => {
+    console.log("After test");
+  });
   tmp.it("passed", () => {});
   tmp.it("failed", () => {
     throw new Error("failed");

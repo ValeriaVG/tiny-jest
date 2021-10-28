@@ -4,12 +4,24 @@ export declare type TestResult = {
     passed?: boolean;
     error?: Error;
 };
+export declare type FixtureFn = () => Promise<void> | void;
 export default class Test {
     title?: string;
-    private suite;
-    private results;
+    suite: {
+        title: string;
+        fn?: Function;
+    }[];
+    results: TestResult[];
+    private _before;
+    private _after;
     constructor(title?: string);
     it: (title: string, fn?: Function) => void;
-    xit: (title: string, fn?: Function) => void;
-    run: () => Promise<TestResult[]>;
+    xit: (title: string, _fn?: Function) => void;
+    run: () => Promise<TestResult[] | {
+        title: string;
+        error: any;
+        passed: boolean;
+    }[]>;
+    before: (fn: FixtureFn) => void;
+    after: (fn: FixtureFn) => void;
 }

@@ -1,6 +1,12 @@
 //@ts-ignore
 import { Test, expect, prettify } from "../dist/mod.ts";
-const { it, run, title } = new Test("node-tiny-jest");
+const { it, run, title, before, after } = new Test("deno-tiny-jest");
+
+after(() => console.log("After test"));
+before(() => console.log("Before test"));
+it("works", () => {
+  console.log("During test");
+});
 
 it("toBe", () => {
   expect(2 + 2).toBe(4);

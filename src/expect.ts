@@ -39,9 +39,17 @@ const matchers: Record<keyof Expectations, Matcher> = {
     return actual ? `Expected ${JSON.stringify(actual)} to be falsy` : false;
   },
   toMatchObject: (actual: any, expected: any): string | false => {
+    const error = `${JSON.stringify(actual)} does not match ${JSON.stringify(
+      expected
+    )}`;
+    if (
+      typeof actual !== typeof expected ||
+      Array.isArray(actual) !== Array.isArray(expected)
+    )
+      return error;
     for (let key in expected) {
       if (typeof actual[key] !== typeof expected[key])
-        return `Types mismatch for ${key}: ${typeof actual[
+        return `${error}:\nTypes mismatch for ${key}: ${typeof actual[
           key
         ]} != ${typeof expected[key]}`;
       if (typeof expected[key] !== "object") {

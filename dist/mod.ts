@@ -56,21 +56,6 @@ export class Test {
   };
 }
 
-export function prettify(testResults: TestResult[]) {
-  testResults.forEach(({ title, passed, skipped, error }) => {
-    if (passed) return console.info("\x1b[32m", `✓ ${title}`);
-    if (skipped) return console.info("\x1b[33m", `□ ${title}`);
-    if (!passed)
-      return console.error(
-        "\x1b[31m",
-        `𐄂 ${title}`,
-        "\n  Failed:",
-        error!.message
-      );
-  });
-  console.log("\x1b[0m");
-}
-
 export class ExpectationError extends Error {
   extensions: { matcher: string; expected: any; actual: any };
   constructor(matcher: string, expected: any, actual: any, diff: string) {
@@ -88,6 +73,10 @@ export type Expectations = {
   toBeFalsy: Expectation<void>;
   toMatchObject: Expectation<Object>;
   toThrow: Expectation<RegExp | void>;
+  toBeGreaterThan: Expectation<number>;
+  toBeGreaterThanOrEqual: Expectation<number>;
+  toBeLessThan: Expectation<number>;
+  toBeLessThanOrEqual: Expectation<number>;
 };
 
 export type Matcher = (actual: any, expected: any) => false | string;
@@ -152,9 +141,39 @@ const matchers: Record<keyof Expectations, Matcher> = {
       }`;
     }
   },
+  toBeGreaterThan: (actual: any, expected: any) => {
+    return actual > expected
+      ? false
+      : `Expected ${JSON.stringify(actual)} to be greater than ${JSON.stringify(
+          expected
+        )}`;
+  },
+  toBeGreaterThanOrEqual: (actual: any, expected: any) => {
+    return actual >= expected
+      ? false
+      : `Expected ${JSON.stringify(
+          actual
+        )} to be greater than or equal ${JSON.stringify(expected)}`;
+  },
+  toBeLessThan: (actual: any, expected: any) => {
+    return actual < expected
+      ? false
+      : `Expected ${JSON.stringify(actual)} to be less than ${JSON.stringify(
+          expected
+        )}`;
+  },
+  toBeLessThanOrEqual: (actual: any, expected: any) => {
+    return actual <= expected
+      ? false
+      : `Expected ${JSON.stringify(
+          actual
+        )} to be less than or equal ${JSON.stringify(expected)}`;
+  },
 };
 
-export function expect(actual: any): Expectations & { not: Expectations } {
+export function expect(
+  actual: any
+): Expectations & { not: Expectations } {
   const expectation: any = {
     not: {},
   };
@@ -183,3 +202,20 @@ export function expect(actual: any): Expectations & { not: Expectations } {
   });
   return expectation;
 }
+
+
+export function prettify(testResults: TestResult[]) {
+  testResults.forEach(({ title, passed, skipped, error }) => {
+    if (passed) return console.info("\x1b[32m", `✓ ${title}`);
+    if (skipped) return console.info("\x1b[33m", `□ ${title}`);
+    if (!passed)
+      return console.error(
+        "\x1b[31m",
+        `𐄂 ${title}`,
+        "\n  Failed:",
+        error!.message
+      );
+  });
+  console.log("\x1b[0m");
+}
+

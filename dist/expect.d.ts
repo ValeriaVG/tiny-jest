@@ -14,6 +14,10 @@ export declare type Expectations = {
     toBeFalsy: Expectation<void>;
     toMatchObject: Expectation<Object>;
     toThrow: Expectation<RegExp | void>;
+    toBeGreaterThan: Expectation<number>;
+    toBeGreaterThanOrEqual: Expectation<number>;
+    toBeLessThan: Expectation<number>;
+    toBeLessThanOrEqual: Expectation<number>;
 };
 export declare type Matcher = (actual: any, expected: any) => false | string;
 export default function expect(actual: any): Expectations & {

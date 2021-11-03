@@ -60,6 +60,13 @@ it("toThrow", () => {
   }).not.toThrow(/server error/gi);
 });
 
+it("toBeGreater/Less", () => {
+  expect(5).toBeGreaterThan(3);
+  expect(3).toBeLessThan(5);
+  expect(4).toBeGreaterThanOrEqual(3);
+  expect(4).toBeGreaterThanOrEqual(4);
+  expect(3).not.toBeLessThan(2);
+});
 const start = performance.now();
 run()
   .then((results) => {

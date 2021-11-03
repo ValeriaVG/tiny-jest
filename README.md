@@ -39,11 +39,9 @@ npm install tiny-jest
 ### Deno:
 
 ```js
-import {
-  Test,
-  expect,
-  prettify,
-} from "https://raw.githubusercontent.com/ValeriaVG/tiny-jest/v1.1.2/dist/mod.ts";
+import Test from "https://raw.githubusercontent.com/ValeriaVG/tiny-jest/v1.2.1/src/Test.ts";
+import expect from "https://raw.githubusercontent.com/ValeriaVG/tiny-jest/v1.2.1/src/expect.ts";
+import prettify from "https://raw.githubusercontent.com/ValeriaVG/tiny-jest/v1.2.1/src/prettify.ts";
 
 const { it, run, title } = new Test("basic");
 

@@ -15,6 +15,10 @@ export type Expectations = {
   toBeFalsy: Expectation<void>;
   toMatchObject: Expectation<Object>;
   toThrow: Expectation<RegExp | void>;
+  toBeGreaterThan: Expectation<number>;
+  toBeGreaterThanOrEqual: Expectation<number>;
+  toBeLessThan: Expectation<number>;
+  toBeLessThanOrEqual: Expectation<number>;
 };
 
 export type Matcher = (actual: any, expected: any) => false | string;
@@ -79,6 +83,34 @@ const matchers: Record<keyof Expectations, Matcher> = {
       }`;
     }
   },
+  toBeGreaterThan: (actual: any, expected: any) => {
+    return actual > expected
+      ? false
+      : `Expected ${JSON.stringify(actual)} to be greater than ${JSON.stringify(
+          expected
+        )}`;
+  },
+  toBeGreaterThanOrEqual: (actual: any, expected: any) => {
+    return actual >= expected
+      ? false
+      : `Expected ${JSON.stringify(
+          actual
+        )} to be greater than or equal ${JSON.stringify(expected)}`;
+  },
+  toBeLessThan: (actual: any, expected: any) => {
+    return actual < expected
+      ? false
+      : `Expected ${JSON.stringify(actual)} to be less than ${JSON.stringify(
+          expected
+        )}`;
+  },
+  toBeLessThanOrEqual: (actual: any, expected: any) => {
+    return actual <= expected
+      ? false
+      : `Expected ${JSON.stringify(
+          actual
+        )} to be less than or equal ${JSON.stringify(expected)}`;
+  },
 };
 
 export default function expect(
@@ -87,7 +119,7 @@ export default function expect(
   const expectation: any = {
     not: {},
   };
-  Object.keys(matchers).forEach((matcher: keyof Expectations) => {
+  (Object.keys(matchers) as Array<keyof Expectations>).forEach((matcher) => {
     expectation[matcher] = (expected: any) => {
       const diff = matchers[matcher](actual, expected);
       if (diff) throw new ExpectationError(matcher, expected, actual, diff);

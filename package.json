@@ -1,6 +1,6 @@
 {
   "name": "tiny-jest",
-  "version": "1.1.2",
+  "version": "1.2.1",
   "description": "Minimalistic zero dependency Jest-like test library to run tests in browser, nodejs or deno.",
   "keywords": [
     "jest",
@@ -13,16 +13,16 @@
   "author": "ValeriaVG",
   "license": "MIT",
   "scripts": {
-    "compile": "tsc",
-    "bundle": "browserify -s tiny-jest -p tinyify dist/index.js -o dist/bundle.js",
-    "build": "yarn compile && yarn bundle",
+    "bundle:web": "esbuild src/index.ts --bundle --minify --sourcemap --outfile=dist/bundle.js",
+    "bundle:deno": "node bundleDeno.js",
+    "compile:node": "tsc",
+    "build": "npm run bundle:web && npm run compile:node && npm run bundle:deno",
     "bench:node": "node benchmark/node.test.js",
     "bench:deno": "deno run -r --allow-read benchmark/deno.test.ts"
   },
   "devDependencies": {
     "@types/node": "^14.0.27",
-    "browserify": "^16.5.2",
-    "tinyify": "^3.0.0",
+    "esbuild": "^0.13.12",
     "typescript": "^3.9.7"
   }
 }

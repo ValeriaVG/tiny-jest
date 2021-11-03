@@ -87,7 +87,7 @@ export default function expect(
   const expectation: any = {
     not: {},
   };
-  Object.keys(matchers).forEach((matcher: keyof Expectations) => {
+  (Object.keys(matchers) as Array<keyof Expectations>).forEach((matcher) => {
     expectation[matcher] = (expected: any) => {
       const diff = matchers[matcher](actual, expected);
       if (diff) throw new ExpectationError(matcher, expected, actual, diff);

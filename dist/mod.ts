@@ -56,21 +56,6 @@ export class Test {
   };
 }
 
-export function prettify(testResults: TestResult[]) {
-  testResults.forEach(({ title, passed, skipped, error }) => {
-    if (passed) return console.info("\x1b[32m", `✓ ${title}`);
-    if (skipped) return console.info("\x1b[33m", `□ ${title}`);
-    if (!passed)
-      return console.error(
-        "\x1b[31m",
-        `𐄂 ${title}`,
-        "\n  Failed:",
-        error!.message
-      );
-  });
-  console.log("\x1b[0m");
-}
-
 export class ExpectationError extends Error {
   extensions: { matcher: string; expected: any; actual: any };
   constructor(matcher: string, expected: any, actual: any, diff: string) {
@@ -154,7 +139,9 @@ const matchers: Record<keyof Expectations, Matcher> = {
   },
 };
 
-export function expect(actual: any): Expectations & { not: Expectations } {
+export function expect(
+  actual: any
+): Expectations & { not: Expectations } {
   const expectation: any = {
     not: {},
   };
@@ -183,3 +170,20 @@ export function expect(actual: any): Expectations & { not: Expectations } {
   });
   return expectation;
 }
+
+
+export function prettify(testResults: TestResult[]) {
+  testResults.forEach(({ title, passed, skipped, error }) => {
+    if (passed) return console.info("\x1b[32m", `✓ ${title}`);
+    if (skipped) return console.info("\x1b[33m", `□ ${title}`);
+    if (!passed)
+      return console.error(
+        "\x1b[31m",
+        `𐄂 ${title}`,
+        "\n  Failed:",
+        error!.message
+      );
+  });
+  console.log("\x1b[0m");
+}
+

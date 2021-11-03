@@ -57,6 +57,26 @@ const matchers = {
                 ` matching ${expression.toString()}, but got ${err.toString()} instead`}`;
         }
     },
+    toBeGreaterThan: (actual, expected) => {
+        return actual > expected
+            ? false
+            : `Expected ${JSON.stringify(actual)} to be greater than ${JSON.stringify(expected)}`;
+    },
+    toBeGreaterThanOrEqual: (actual, expected) => {
+        return actual >= expected
+            ? false
+            : `Expected ${JSON.stringify(actual)} to be greater than or equal ${JSON.stringify(expected)}`;
+    },
+    toBeLessThan: (actual, expected) => {
+        return actual < expected
+            ? false
+            : `Expected ${JSON.stringify(actual)} to be less than ${JSON.stringify(expected)}`;
+    },
+    toBeLessThanOrEqual: (actual, expected) => {
+        return actual <= expected
+            ? false
+            : `Expected ${JSON.stringify(actual)} to be less than or equal ${JSON.stringify(expected)}`;
+    },
 };
 function expect(actual) {
     const expectation = {

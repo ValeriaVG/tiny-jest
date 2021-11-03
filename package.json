@@ -13,7 +13,7 @@
   "author": "ValeriaVG",
   "license": "MIT",
   "scripts": {
-    "bundle:web": "esbuild src/index.ts --bundle --minify --sourcemap --outfile=dist/bundle.js",
+    "bundle:web": "esbuild src/browser.ts --bundle --minify --sourcemap --outfile=dist/bundle.js",
     "bundle:deno": "node bundleDeno.js",
     "compile:node": "tsc",
     "build": "npm run bundle:web && npm run compile:node && npm run bundle:deno",

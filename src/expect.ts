@@ -15,6 +15,10 @@ export type Expectations = {
   toBeFalsy: Expectation<void>;
   toMatchObject: Expectation<Object>;
   toThrow: Expectation<RegExp | void>;
+  toBeGreaterThan: Expectation<number>;
+  toBeGreaterThanOrEqual: Expectation<number>;
+  toBeLessThan: Expectation<number>;
+  toBeLessThanOrEqual: Expectation<number>;
 };
 
 export type Matcher = (actual: any, expected: any) => false | string;
@@ -78,6 +82,34 @@ const matchers: Record<keyof Expectations, Matcher> = {
         ` matching ${expression.toString()}, but got ${err.toString()} instead`
       }`;
     }
+  },
+  toBeGreaterThan: (actual: any, expected: any) => {
+    return actual > expected
+      ? false
+      : `Expected ${JSON.stringify(actual)} to be greater than ${JSON.stringify(
+          expected
+        )}`;
+  },
+  toBeGreaterThanOrEqual: (actual: any, expected: any) => {
+    return actual >= expected
+      ? false
+      : `Expected ${JSON.stringify(
+          actual
+        )} to be greater than or equal ${JSON.stringify(expected)}`;
+  },
+  toBeLessThan: (actual: any, expected: any) => {
+    return actual < expected
+      ? false
+      : `Expected ${JSON.stringify(actual)} to be less than ${JSON.stringify(
+          expected
+        )}`;
+  },
+  toBeLessThanOrEqual: (actual: any, expected: any) => {
+    return actual <= expected
+      ? false
+      : `Expected ${JSON.stringify(
+          actual
+        )} to be less than or equal ${JSON.stringify(expected)}`;
   },
 };
 

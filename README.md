@@ -64,7 +64,7 @@ const { it, run, title, before, after } = new Test("name-of-your-test");
 before(async () => {
   // some setup
 });
-before(async () => {
+after(async () => {
   // some cleanup
 });
 

@@ -19,7 +19,21 @@ export declare type Expectations = {
     toBeLessThan: Expectation<number>;
     toBeLessThanOrEqual: Expectation<number>;
 };
-export declare type Matcher = (actual: any, expected: any) => false | string;
-export default function expect(actual: any): Expectations & {
+export declare type SyncExpectationResult = {
+    pass: boolean;
+    message(): string;
+};
+export interface Context {
+    isNot: boolean;
+}
+export declare type Matcher = (ctx: Context, actual: any, expected: any) => {
+    pass: boolean;
+    message: () => string;
+};
+declare function expect(actual: any): Expectations & {
     not: Expectations;
 };
+declare namespace expect {
+    var extend: (extensions: Record<string, Expectation<any>>) => void;
+}
+export default expect;

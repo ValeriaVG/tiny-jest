@@ -27,7 +27,7 @@ it("toThrow", () => {
   expect(() => {
     throw "Error";
   }).toThrow();
-  expect(() => {}).not.toThrow();
+  expect(() => { }).not.toThrow();
   expect(() => {
     throw "Not Found";
   }).toThrow(/not found/gi);
@@ -77,4 +77,21 @@ it("toMatchObject/arrays", () => {
   expect({ a: [1, 2, 3] }).toMatchObject({ a: [1, 2, 3] });
   expect({ a: [1, 2] }).not.toMatchObject({ a: [1, 2, 3] });
 });
+
+
+it("extend", () => {
+  expect.extend({
+    toBeEvenlyDividableBy: (ctx, actual, divisor) => {
+      return {
+        pass: actual % divisor == 0, message: () => `Expected ${JSON.stringify(actual)}${ctx.isNot ? 'not' : ''} to be less dividable by ${JSON.stringify(
+          divisor
+        )}`
+      }
+    }
+  })
+  expect(5).toBeEvenlyDividableBy(5);
+  expect(4).toBeEvenlyDividableBy(2);
+  expect(7).not.toBeEvenlyDividableBy(2);
+});
+
 module.exports = test;

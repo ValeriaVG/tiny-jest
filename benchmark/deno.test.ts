@@ -51,7 +51,7 @@ it("toThrow", () => {
   expect(() => {
     throw "Error";
   }).toThrow();
-  expect(() => {}).not.toThrow();
+  expect(() => { }).not.toThrow();
   expect(() => {
     throw "Not Found";
   }).toThrow(/not found/gi);
@@ -67,6 +67,22 @@ it("toBeGreater/Less", () => {
   expect(4).toBeGreaterThanOrEqual(4);
   expect(3).not.toBeLessThan(2);
 });
+
+it("extend", () => {
+  expect.extend({
+    toBeEvenlyDividableBy: (ctx, actual, divisor) => {
+      return {
+        pass: actual % divisor == 0, message: () => `Expected ${JSON.stringify(actual)}${ctx.isNot ? 'not' : ''} to be less dividable by ${JSON.stringify(
+          divisor
+        )}`
+      }
+    }
+  })
+  expect(5).toBeEvenlyDividableBy(5);
+  expect(4).toBeEvenlyDividableBy(2);
+  expect(7).not.toBeEvenlyDividableBy(2);
+});
+
 const start = performance.now();
 run()
   .then((results) => {

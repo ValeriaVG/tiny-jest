@@ -78,97 +78,113 @@ export type Expectations = {
   toBeLessThan: Expectation<number>;
   toBeLessThanOrEqual: Expectation<number>;
 };
+export type SyncExpectationResult = {
+  pass: boolean;
+  message(): string;
+};
 
-export type Matcher = (actual: any, expected: any) => false | string;
+export interface Context {
+  isNot: boolean
+}
+
+export type Matcher = (ctx: Context, actual: any, expected: any) => { pass: boolean, message: () => string };
 
 const matchers: Record<keyof Expectations, Matcher> = {
-  toBe: (actual: any, expected: any) => {
-    return expected === actual
-      ? false
-      : `Expected ${JSON.stringify(actual)} to be ${JSON.stringify(expected)}`;
+  toBe: (ctx: Context, actual: any, expected: any) => {
+    return {
+      pass: expected === actual,
+      message: () => `Expected ${JSON.stringify(actual)}${ctx.isNot ? ' not' : ''} to be ${JSON.stringify(expected)}`
+    };
   },
-  toEqual: (actual: any, expected: any) => {
-    return expected == actual
-      ? false
-      : `Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(
-          expected
-        )}`;
+  toEqual: (ctx: Context, actual: any, expected: any) => {
+    return {
+      pass: expected == actual, message: () => `Expected ${JSON.stringify(actual)}${ctx.isNot ? ' not' : ''} to equal ${JSON.stringify(
+        expected
+      )}`
+    };
   },
-  toBeTruthy: (actual: any) => {
-    return actual ? false : `Expected ${JSON.stringify(actual)} to be truthy`;
+  toBeTruthy: (ctx: Context, actual: any) => {
+    return { pass: !!actual, message: () => `Expected ${JSON.stringify(actual)}${ctx.isNot ? ' not' : ''} to be truthy` };
   },
-  toBeFalsy: (actual: any) => {
-    return actual ? `Expected ${JSON.stringify(actual)} to be falsy` : false;
+  toBeFalsy: (ctx: Context, actual: any) => {
+    return { pass: !actual, message: () => `Expected ${JSON.stringify(actual)}${ctx.isNot ? ' not' : ''} to be falsy` };
   },
-  toMatchObject: (actual: any, expected: any): string | false => {
-    const error = `${JSON.stringify(actual)} does not match ${JSON.stringify(
+  toMatchObject: (ctx: Context, actual: any, expected: any) => {
+    const error = `Expected ${JSON.stringify(actual)}${ctx.isNot ? ' not' : ''} to match ${JSON.stringify(
       expected
     )}`;
     if (
       typeof actual !== typeof expected ||
       Array.isArray(actual) !== Array.isArray(expected)
     )
-      return error;
+      return { pass: false, message: () => error };
+
     for (let key in expected) {
       if (typeof actual[key] !== typeof expected[key])
-        return `${error}:\nTypes mismatch for ${key}: ${typeof actual[
-          key
-        ]} != ${typeof expected[key]}`;
+        return {
+          pass: false, message: () => `${error}:\nTypes mismatch for ${key}: ${typeof actual[
+            key
+          ]} != ${typeof expected[key]}`
+        };
       if (typeof expected[key] !== "object") {
-        const res = matchers.toBe(actual[key], expected[key]);
-        if (res)
-          return `Mismatched "${key}": ${JSON.stringify(
-            actual[key]
-          )} != ${JSON.stringify(expected[key])}`;
+        const res = matchers.toBe(ctx, actual[key], expected[key]);
+        if (!res.pass)
+          return {
+            pass: false, message: () => `${error}: Mismatched "${key}": ${JSON.stringify(
+              actual[key]
+            )} != ${JSON.stringify(expected[key])}`
+          };
         continue;
       }
-      const res = matchers.toMatchObject(actual[key], expected[key]);
-      if (res) return res;
+      const res = matchers.toMatchObject(ctx, actual[key], expected[key]);
+      if (!res.pass) return res;
     }
-    return false;
+    return { pass: true, message: () => error };
   },
-  toThrow: (fn: Function, expression?: RegExp): string | false => {
+  toThrow: (ctx: Context, fn: Function, expression?: RegExp) => {
+    const error = `Expected ${fn.toString()}${ctx.isNot ? ' not' : ''} to throw error ${expression && ` matching ${expression.toString()}`}`;
     try {
       fn();
-      return `Expected ${fn.toString()} to throw error ${
-        expression && ` matching ${expression.toString()}`
-      }`;
+      return {
+        pass: false, message: () => error
+      };
     } catch (err) {
-      if (!expression || expression.test(err.toString())) return false;
-      return `Expected ${fn.toString()} to throw error ${
-        expression &&
-        ` matching ${expression.toString()}, but got ${err.toString()} instead`
-      }`;
+      if (!expression || expression.test(err.toString())) return { pass: true, message: () => error };
+      return {
+        pass: false, message: () => `Expected ${fn.toString()}${ctx.isNot ? ' not' : ''} to throw error ${expression &&
+          ` matching ${expression.toString()}, but got ${err.toString()} instead`
+          }`
+      };
     }
   },
-  toBeGreaterThan: (actual: any, expected: any) => {
-    return actual > expected
-      ? false
-      : `Expected ${JSON.stringify(actual)} to be greater than ${JSON.stringify(
-          expected
-        )}`;
+  toBeGreaterThan: (ctx: Context, actual: any, expected: any) => {
+    return {
+      pass: actual > expected, message: () => `Expected ${JSON.stringify(actual)}${ctx.isNot ? ' not' : ''} to be greater than ${JSON.stringify(
+        expected
+      )}`
+    };
   },
-  toBeGreaterThanOrEqual: (actual: any, expected: any) => {
-    return actual >= expected
-      ? false
-      : `Expected ${JSON.stringify(
-          actual
-        )} to be greater than or equal ${JSON.stringify(expected)}`;
+  toBeGreaterThanOrEqual: (ctx: Context, actual: any, expected: any) => {
+    return {
+      pass: actual >= expected, message: () => `Expected ${JSON.stringify(
+        actual
+      )}${ctx.isNot ? ' not' : ''} to be greater than or equal ${JSON.stringify(expected)}`
+    };
   },
-  toBeLessThan: (actual: any, expected: any) => {
-    return actual < expected
-      ? false
-      : `Expected ${JSON.stringify(actual)} to be less than ${JSON.stringify(
-          expected
-        )}`;
+  toBeLessThan: (ctx: Context, actual: any, expected: any) => {
+    return {
+      pass: actual < expected, message: () => `Expected ${JSON.stringify(actual)}${ctx.isNot ? ' not' : ''} to be less than ${JSON.stringify(
+        expected
+      )}`
+    };
   },
-  toBeLessThanOrEqual: (actual: any, expected: any) => {
-    return actual <= expected
-      ? false
-      : `Expected ${JSON.stringify(
-          actual
-        )} to be less than or equal ${JSON.stringify(expected)}`;
-  },
+  toBeLessThanOrEqual: (ctx: Context, actual: any, expected: any) => {
+    return {
+      pass: actual <= expected, message: () => `Expected ${JSON.stringify(
+        actual
+      )}${ctx.isNot ? ' not' : ''} to be less than or equal ${JSON.stringify(expected)}`
+    };
+  }
 };
 
 export function expect(
@@ -179,30 +195,27 @@ export function expect(
   };
   (Object.keys(matchers) as Array<keyof Expectations>).forEach((matcher) => {
     expectation[matcher] = (expected: any) => {
-      const diff = matchers[matcher](actual, expected);
-      if (diff) throw new ExpectationError(matcher, expected, actual, diff);
+      const result = matchers[matcher]({ isNot: false }, actual, expected);
+      if (!result.pass)
+        throw new ExpectationError(matcher, expected, actual, result.message());
     };
     expectation.not[matcher] = (expected: any) => {
-      const diff = matchers[matcher](actual, expected);
-      if (diff === false)
+      const result = matchers[matcher]({ isNot: true }, actual, expected);
+      if (result.pass)
         throw new ExpectationError(
           matcher,
           expected,
           actual,
-          `Expected ${JSON.stringify(actual)} not ${matcher.replace(
-            /[A-Z]/g,
-            (letter) => ` ${letter.toLowerCase()}`
-          )}${
-            typeof expected !== "undefined"
-              ? " " + JSON.stringify(expected)
-              : ""
-          }`
+          result.message()
         );
     };
   });
   return expectation;
 }
 
+expect.extend = (extensions: Record<string, Expectation<any>>) => {
+  Object.assign(matchers, extensions)
+}
 
 export function prettify(testResults: TestResult[]) {
   testResults.forEach(({ title, passed, skipped, error }) => {
